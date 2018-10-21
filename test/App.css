@@ -1,0 +1,25 @@
+html {
+  padding: 2em;
+}
+
+.box {
+  width: 200px;
+  height: 200px; 
+  margin-bottom: 1em;
+}
+
+.box.red {
+  background-color: red;
+}
+
+.box.blue {
+  background-color: blue;
+}
+
+.box.green {
+  background-color: green;
+}
+
+.box.black {
+  background-color: black;
+}

@@ -1,0 +1,15 @@
+{
+  "name": "trombone",
+  "version": "0.0.0",
+  "main": "src/Trombone.js",
+  "license": "MIT",
+  "scripts": {
+    "test": "./node_modules/.bin/parcel index.html"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.0.0-0",
+    "@babel/plugin-proposal-class-properties": "^7.1.0",
+    "@babel/plugin-proposal-decorators": "^7.1.2",
+    "parcel-bundler": "^1.10.3"
+  }
+}
