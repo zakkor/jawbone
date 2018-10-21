@@ -6,4 +6,6 @@ const Jawbone = {
   Model,
 }
 
+window.Jawbone = Jawbone
+
 export default Jawbone

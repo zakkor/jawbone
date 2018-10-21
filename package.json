@@ -4,6 +4,7 @@
   "main": "src/Jawbone.js",
   "license": "MIT",
   "scripts": {
+    "prepublish": "./node_modules/.bin/parcel build src/Jawbone.js -d lib -o jawbone.min.js",
     "test": "./node_modules/.bin/parcel index.html"
   },
   "devDependencies": {
