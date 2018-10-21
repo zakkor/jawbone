@@ -1,6 +1,6 @@
 {
   "name": "jawbone",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "main": "src/Jawbone.js",
   "license": "MIT",
   "scripts": {
