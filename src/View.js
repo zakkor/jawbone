@@ -18,7 +18,7 @@ export default class View {
 
   attachEventListeners(renderedBindings) {
     const unpackBinding = binding => {
-      const identLabel = '<#trombone-binding#>'
+      const identLabel = '<#jawbone-binding#>'
       if (binding.indexOf(identLabel) != -1) {
         binding = binding.replace(identLabel, '')
       } else {
@@ -49,7 +49,7 @@ export default class View {
       }
     }
     const substBinding = text => {
-      text = text.replace(/<#trombone-binding#>/g, '', -1)
+      text = text.replace(/<#jawbone-binding#>/g, '', -1)
       text = text.replace(/<#key:.*?#>/g, '', -1)
       text = text.replace(/<#val:/g, '', -1)
       text = text.replace(/#>/g, '', -1)
@@ -121,7 +121,7 @@ export default class View {
     // add attrs
     for (let [key, val] of Object.entries(model.__attrs)) {
       let binding = new String(val)
-      binding.toString = () => `<#trombone-binding#><#key:${key}#><#val:${val}#>`
+      binding.toString = () => `<#jawbone-binding#><#key:${key}#><#val:${val}#>`
 
       bindings[key] = binding
     }
@@ -137,7 +137,7 @@ export default class View {
       const descriptor = Object.getOwnPropertyDescriptor(proto, key)
 
       bindings[key] = descriptor.value
-      bindings[key].toString = () => `<#trombone-binding#><#key:${key}#><#val:${key}#>`
+      bindings[key].toString = () => `<#jawbone-binding#><#key:${key}#><#val:${key}#>`
     }
     return bindings
   }

@@ -1,7 +1,7 @@
 {
-  "name": "trombone",
+  "name": "jawbone",
   "version": "0.0.0",
-  "main": "src/Trombone.js",
+  "main": "src/Jawbone.js",
   "license": "MIT",
   "scripts": {
     "test": "./node_modules/.bin/parcel index.html"

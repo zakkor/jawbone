@@ -1,6 +1,6 @@
-import Trombone from '../src/Trombone'
+import Jawbone from '../src/Jawbone'
 
-class Cat extends Trombone.Model {
+class Cat extends Jawbone.Model {
   static attrs = {
     color: 'red',
   }
@@ -31,7 +31,7 @@ const catTemplate = (m) => {
   `
 }
 
-class CatView extends Trombone.View {
+class CatView extends Jawbone.View {
   static template = catTemplate
 }
 

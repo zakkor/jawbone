@@ -1,9 +1,9 @@
 import View from './View'
 import Model from './Model'
 
-const Trombone = {
+const Jawbone = {
   View,
   Model,
 }
 
-export default Trombone
+export default Jawbone
