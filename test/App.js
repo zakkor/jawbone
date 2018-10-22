@@ -1,41 +1,24 @@
 import Jawbone from '../src/Jawbone'
 
-class Cat extends Jawbone.Model {
-  static attrs = {
-    color: 'red',
-  }
-
-  getOppositeColor(color) {
-    if (color == 'red') {
-      return 'blue'
-    }
-    return 'red'
-  }
-
-  toggleColor() {
-    this.color = this.getOppositeColor(this.color)
-  }
-}
-
-const catTemplate = (m) => {
-  return `
-    <div class="box ${m.color}"> </div>
-
-    <button onclick="${m.toggleColor}"> Change color to ${m.getOppositeColor(m.color)} </button>
-    <br><br>
-    <br><br>
-
-    <label> Try changing the color to 'green' or 'black', by typing: </label>
-    <br><br>
-    <input type="text" value="${m.color}">
-  `
-}
-
 class CatView extends Jawbone.View {
-  static template = catTemplate
+  static template = m => {
+    return `
+      <p>Hi, I'm a cat and my name is: ${m.name} </p>`
+  }
 }
 
-let cat = new Cat()
-const catView = new CatView(cat)
+class HelloView extends Jawbone.View {
+  static el = '#root'
+  static template = (m) => {
+    return `
+      <input type="text" value="${m.name}">
+      <p>Hello, ${m.name} </p>
+      <p>A list, ${m.list} </p>`
+  }
+}
 
-window.cat = cat 
+let hello = { name: 'World', list: [1, 2, 3] }
+let helloView = new HelloView(hello)
+// note that you have to reassign hello to use it as a model
+hello = helloView.model
+hello.list.push(1)

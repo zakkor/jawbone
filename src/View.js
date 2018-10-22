@@ -1,14 +1,25 @@
+import Jawbone from "./Jawbone";
+
 export default class View {
   static model = undefined
   static template = undefined
 
-  constructor(model) {
+  constructor(model, parent) {
     if (model) {
-      this.model = model
+      // received POJO, construct default model
+      if (model.constructor.name === 'Object') {
+        this.model = new Jawbone.Model(model) 
+      } else {
+        this.model = model
+      }
     } else {
       this.model = new this.constructor.model()
     }
     this.template = this.constructor.template
+
+    if (this.constructor.el) {
+      this.el = document.querySelector(this.constructor.el)
+    }
 
     this.model.onChange = () => {
       this.render()
@@ -16,54 +27,58 @@ export default class View {
     this.render()
   }
 
-  attachEventListeners(renderedBindings) {
-    const unpackBinding = binding => {
-      const identLabel = '<#jawbone-binding#>'
-      if (binding.indexOf(identLabel) != -1) {
-        binding = binding.replace(identLabel, '')
-      } else {
-        return null
-      }
-
-      
-      const keyLabel = '<#key:'
-      const keyStartIdx = binding.indexOf(keyLabel)
-      if (keyStartIdx != -1) {
-        binding = binding.replace(keyLabel, '')
-      }
-      const keyEndIdx = binding.indexOf('#>')
-      const key = binding.slice(keyStartIdx, keyEndIdx)
-      binding = binding.slice(keyEndIdx + 2)
-
-      const valLabel = '<#val:'
-      if (binding.indexOf(valLabel) != -1) {
-        binding = binding.replace(valLabel, '')
-      }
-      const valEndIdx = binding.indexOf('#>')
-      const val = binding.slice(0, valEndIdx)
-      binding = binding.slice(valEndIdx + 2)
-
-      return {
-        key,
-        val  
-      }
-    }
-    const substBinding = text => {
-      text = text.replace(/<#jawbone-binding#>/g, '', -1)
-      text = text.replace(/<#key:.*?#>/g, '', -1)
-      text = text.replace(/<#val:/g, '', -1)
-      text = text.replace(/#>/g, '', -1)
-      return text
+  _unpackBinding(binding) {
+    const identLabel = '<#jawbone-binding#>'
+    if (binding.indexOf(identLabel) != -1) {
+      binding = binding.replace(identLabel, '')
+    } else {
+      return null
     }
 
+    
+    const keyLabel = '<#key:'
+    const keyStartIdx = binding.indexOf(keyLabel)
+    if (keyStartIdx != -1) {
+      binding = binding.replace(keyLabel, '')
+    }
+    const keyEndIdx = binding.indexOf('#>')
+    const key = binding.slice(keyStartIdx, keyEndIdx)
+    binding = binding.slice(keyEndIdx + 2)
+
+    const valLabel = '<#val:'
+    if (binding.indexOf(valLabel) != -1) {
+      binding = binding.replace(valLabel, '')
+    }
+    const valEndIdx = binding.indexOf('#>')
+    const val = binding.slice(0, valEndIdx)
+    binding = binding.slice(valEndIdx + 2)
+
+    return {
+      key,
+      val  
+    }
+  }
+
+  _substituteBinding(text) {
+    text = text.replace(/<#jawbone-binding#>/g, '', -1)
+    text = text.replace(/<#key:.*?#>/g, '', -1)
+    text = text.replace(/<#val:/g, '', -1)
+    text = text.replace(/#>/g, '', -1)
+    return text
+  }
+
+  _attachEventListeners(renderedBindings) {
     let els = htmlToElements(renderedBindings)
 
     for (let el of els) {
-      if (el.nodeName === 'BUTTON' || el.nodeName === 'DIV') {
-
+      switch (el.nodeName) {
+      case 'BUTTON':
+      case 'DIV':
+      case 'P':
+      case 'LABEL':
         let attrsToRemove = []
         for (let attr of el.attributes) {
-          const unpacked = unpackBinding(attr.nodeValue)
+          const unpacked = this._unpackBinding(attr.nodeValue)
 
           // event handlers
           if (typeof(this.model[unpacked.key]) === 'function') {
@@ -75,7 +90,7 @@ export default class View {
           }
           // value substitution
           else {
-            const substituted = substBinding(attr.nodeValue)
+            const substituted = this._substituteBinding(attr.nodeValue)
             attr.nodeValue = substituted
           }
 
@@ -85,23 +100,14 @@ export default class View {
           el.removeAttribute(toRemove)
         }
 
-        const substituted = substBinding(el.innerText)
+        const substituted = this._substituteBinding(el.innerText)
         el.innerText = substituted
+        break
       }
-      // if (el.nodeName === 'LABEL') {
-      //   const substituted = substBinding(el.innerText)
-      //   el.innerText = substituted
-      // }
-      // if (el.nodeName === 'P') {
-      //   const substituted = substBinding(el.innerText)
-      //   const unpacked = unpackBinding(el.innerText)
-      //   if (unpacked) {
-      //     el.innerText = substituted
-      //   }
-      // }
+
       if (el.nodeName === 'INPUT') {
-        const substituted = substBinding(el.attributes['value'].nodeValue)
-        const unpacked = unpackBinding(el.attributes['value'].nodeValue)
+        const substituted = this._substituteBinding(el.attributes['value'].nodeValue)
+        const unpacked = this._unpackBinding(el.attributes['value'].nodeValue)
         if (unpacked) {
           el.attributes['value'].nodeValue = substituted
 
@@ -115,7 +121,7 @@ export default class View {
     return els
   }
 
-  generateBindings(model) {
+  _generateBindings(model) {
     let bindings = {}
 
     // add attrs
@@ -143,17 +149,19 @@ export default class View {
   }
 
   render() {
-    let rootEl = document.querySelector('#root')
-
-    const bindings = this.generateBindings(this.model)
+    const bindings = this._generateBindings(this.model)
     const renderedBindings = this.template(bindings)
 
-    const els = this.attachEventListeners(renderedBindings)
+    const els = this._attachEventListeners(renderedBindings)
 
-    rootEl.innerHTML = ''
+    if (this.el) {
+      this.el.innerHTML = ''
 
-    for (let i = els.length-1; i >= 0; i--) {
-      rootEl.prepend(els[i])
+      for (let i = els.length-1; i >= 0; i--) {
+        this.el.prepend(els[i])
+      }
+    } else {
+      return els
     }
   }
 }
